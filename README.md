@@ -47,6 +47,9 @@ scripts/
 2. 對應台灣時間是每天 `08:00`（UTC+8）
 3. 預設任務是 `research + dry-run`
 4. 任務名稱是 `每日 AI 趨勢晨報`
+5. 內容來源之一固定包含：
+   `https://ai-digest.liziran.com`
+   `https://ai-brief.liziran.com/zh/`
 
 ## 預設工作線
 

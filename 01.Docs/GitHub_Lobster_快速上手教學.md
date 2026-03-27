@@ -99,6 +99,9 @@
 1. `mission`：`每日 AI 趨勢晨報`
 2. `lane`：`research`
 3. `mode`：`dry-run`
+4. 內容來源之一固定包含：
+   `https://ai-digest.liziran.com`
+   `https://ai-brief.liziran.com/zh/`
 
 ### 為什麼先這樣設計
 
@@ -109,6 +112,13 @@
 3. 不直接寫入外部系統
 
 這樣最穩。
+
+### 來源驗證
+
+我已驗證以下網址目前可正常存取：
+
+1. `https://ai-digest.liziran.com`：HTTP `200`
+2. `https://ai-brief.liziran.com/zh/`：HTTP `200`
 
 ## 任務跑完之後要看哪裡
 

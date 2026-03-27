@@ -34,6 +34,11 @@ GitHub 負責：
 3. 發布前檢查：整理標題、CTA、素材、連結驗證
 4. 日常巡檢：整理健康狀態、風險與交班摘要
 
+目前每日排程研究任務的內容來源之一固定包含：
+
+1. `https://ai-digest.liziran.com`
+2. `https://ai-brief.liziran.com/zh/`
+
 ## 不建議一開始就做的事
 
 1. 自動刪除檔案

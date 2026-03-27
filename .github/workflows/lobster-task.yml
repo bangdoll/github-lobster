@@ -76,7 +76,10 @@ jobs:
           elif [ "$EVENT_NAME" = "schedule" ]; then
             echo "mission=每日 AI 趨勢晨報" >> "$GITHUB_OUTPUT"
             echo "details<<EOF" >> "$GITHUB_OUTPUT"
-            echo "請整理今日值得追蹤的 AI 趨勢，輸出五點摘要與三條後續建議。" >> "$GITHUB_OUTPUT"
+            echo "請整理今日值得追蹤的 AI 趨勢，輸出五點摘要與三條後續建議。內容來源之一必須包含以下兩個網站：" >> "$GITHUB_OUTPUT"
+            echo "1. https://ai-digest.liziran.com" >> "$GITHUB_OUTPUT"
+            echo "2. https://ai-brief.liziran.com/zh/" >> "$GITHUB_OUTPUT"
+            echo "請優先關注 AI 論文簡報、研究摘要與值得追蹤的模型動向。" >> "$GITHUB_OUTPUT"
             echo "EOF" >> "$GITHUB_OUTPUT"
             echo "lane=research" >> "$GITHUB_OUTPUT"
             echo "mode=dry-run" >> "$GITHUB_OUTPUT"

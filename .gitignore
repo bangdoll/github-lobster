@@ -1,4 +1,5 @@
 lobster/runs/*
 !lobster/runs/.gitkeep
+runtime/*.json
 __pycache__/
 *.pyc

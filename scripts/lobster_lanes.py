@@ -28,6 +28,7 @@ def build_common_sections(mission: str, details: str) -> Dict[str, str]:
         "details": details.strip() or "未提供補充說明。",
         "output_expectation": extract_issue_field(details, "預期輸出") or "未指定預期輸出。",
         "guardrail": extract_issue_field(details, "風險邊界") or "未指定額外風險邊界。",
+        "target_folder": extract_issue_field(details, "目標資料夾") or "Inbox",
     }
 
 
@@ -166,3 +167,46 @@ def build_packet(handler_name: str, lane_label: str, mission: str, details: str,
     packet = handler(mission, details)
     packet["markdown"] = render_markdown(packet, lane_label, run_id)
     return packet
+
+
+def slugify_folder_name(folder_name: str) -> str:
+    cleaned = folder_name.strip().replace("\\", "/").strip("/")
+    cleaned = cleaned or "Inbox"
+    allowed = []
+    for char in cleaned:
+        if char.isalnum() or char in ("-", "_", "/"):
+            allowed.append(char)
+        elif char.isspace():
+            allowed.append("-")
+    safe = "".join(allowed).strip("-/")
+    return safe or "Inbox"
+
+
+def render_knowledge_note(packet: Dict[str, Any], run_id: str) -> str:
+    lines = [
+        f"# {packet['mission']}",
+        "",
+        f"- 建立時間：{utc_now_text()}",
+        f"- 任務編號：{run_id}",
+        f"- 目標資料夾：{packet['target_folder']}",
+        "",
+        "## 摘要",
+        "",
+        packet["details"],
+        "",
+        "## 預期輸出",
+        "",
+        packet["output_expectation"],
+        "",
+        "## 風險邊界",
+        "",
+        packet["guardrail"],
+        "",
+        "## 整理清單",
+    ]
+    for item in packet["checklist"]:
+        lines.append(f"- {item}")
+    lines.extend(["", "## 下一步"])
+    for item in packet["next_actions"]:
+        lines.append(f"- {item}")
+    return "\n".join(lines) + "\n"

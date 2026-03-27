@@ -11,11 +11,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict
 
-from lobster_lanes import build_packet
+from lobster_lanes import build_packet, render_knowledge_note, slugify_folder_name
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 REGISTRY_PATH = PROJECT_ROOT / "lobster" / "registry.json"
 RUNS_DIR = PROJECT_ROOT / "lobster" / "runs"
+KNOWLEDGE_VAULT_DIR = PROJECT_ROOT / "knowledge-vault"
 
 
 def load_registry() -> Dict[str, Any]:
@@ -55,6 +56,26 @@ def infer_lane(mission: str, details: str, requested_lane: str, registry: Dict[s
 def build_run_id() -> str:
     now = datetime.now(timezone.utc)
     return now.strftime("%Y%m%dT%H%M%S%fZ")
+
+
+def ensure_within_project(path: Path) -> None:
+    resolved = path.resolve()
+    project_resolved = PROJECT_ROOT.resolve()
+    if not str(resolved).startswith(str(project_resolved)):
+        raise ValueError(f"偵測到不安全路徑：{path}")
+
+
+def write_knowledge_note(packet: Dict[str, Any], run_id: str) -> Path:
+    safe_folder = slugify_folder_name(packet.get("target_folder", "Inbox"))
+    target_dir = KNOWLEDGE_VAULT_DIR / safe_folder
+    ensure_within_project(target_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    note_name = f"{run_id}-{slugify_folder_name(packet['mission']) or 'knowledge-note'}.md"
+    note_path = target_dir / note_name
+    ensure_within_project(note_path)
+    note_path.write_text(render_knowledge_note(packet, run_id), encoding="utf-8")
+    return note_path
 
 
 def write_outputs(run_dir: Path, summary: Dict[str, Any], packet: Dict[str, Any]) -> None:
@@ -108,6 +129,9 @@ def write_outputs(run_dir: Path, summary: Dict[str, Any], packet: Dict[str, Any]
         ]
     )
 
+    if summary.get("knowledge_output_path"):
+        lines.append(f"- knowledge note: {summary['knowledge_output_path']}")
+
     summary_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -151,12 +175,7 @@ def main() -> int:
 
     execution = "dry-run 模式，未執行任何外部腳本。"
     status = "completed"
-
-    if args.mode == "safe-run":
-        if os.environ.get("LOBSTER_ALLOW_LOCAL_EXECUTION") == "1":
-            execution = "safe-run 已開啟，但目前 starter 尚未綁定實際腳本。"
-        else:
-            execution = "safe-run 已要求執行，但環境未開啟 LOBSTER_ALLOW_LOCAL_EXECUTION=1。"
+    knowledge_output_path = ""
 
     packet = build_packet(
         lane_info["handler"],
@@ -165,6 +184,17 @@ def main() -> int:
         details,
         run_id,
     )
+
+    if args.mode == "safe-run":
+        if os.environ.get("LOBSTER_ALLOW_LOCAL_EXECUTION") == "1":
+            if lane == "knowledge":
+                note_path = write_knowledge_note(packet, run_id)
+                knowledge_output_path = str(note_path.relative_to(PROJECT_ROOT))
+                execution = f"已安全寫入知識筆記：{knowledge_output_path}"
+            else:
+                execution = "safe-run 已開啟，但目前只有 knowledge 線支援安全寫入。"
+        else:
+            execution = "safe-run 已要求執行，但環境未開啟 LOBSTER_ALLOW_LOCAL_EXECUTION=1。"
 
     summary: Dict[str, Any] = {
         "run_id": run_id,
@@ -178,6 +208,7 @@ def main() -> int:
         "deliverable_type": lane_info["deliverable_type"],
         "verification_log": verification_log,
         "execution": execution,
+        "knowledge_output_path": knowledge_output_path,
     }
 
     write_outputs(run_dir, summary, packet)

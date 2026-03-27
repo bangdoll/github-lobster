@@ -24,12 +24,13 @@ GitHub 負責：
 2. `scripts/lobster_router.py` 解析任務
 3. 依 `lane` 分流到對應工作線
 4. 產出 `summary.json`、`summary.md`、`packet.json`、`packet.md`
-5. 上傳成 GitHub Artifact 或回寫到 Issue
+5. 若為 `knowledge` 線且使用 `safe-run`，額外寫入 `knowledge-vault/`
+6. 上傳成 GitHub Artifact 或回寫到 Issue
 
 ## 先從哪些任務開始
 
 1. 研究摘要：整理來源、假設、風險、下一步
-2. 知識整理：整理命名、歸檔、標籤、合併策略
+2. 知識整理：整理命名、歸檔、標籤、合併策略，並可安全寫入 repo 內知識區
 3. 發布前檢查：整理標題、CTA、素材、連結驗證
 4. 日常巡檢：整理健康狀態、風險與交班摘要
 

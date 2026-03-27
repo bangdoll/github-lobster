@@ -32,6 +32,14 @@ body:
       placeholder: 請輸出 markdown 摘要，並附上來源連結
     validations:
       required: true
+  - type: input
+    id: target_folder
+    attributes:
+      label: 目標資料夾
+      description: 若是 knowledge 線，請填要寫入 knowledge-vault 的子資料夾
+      placeholder: Inbox
+    validations:
+      required: false
   - type: textarea
     id: guardrail
     attributes:

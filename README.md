@@ -34,6 +34,7 @@ scripts/
 3. 選擇工作線 `lane`
 4. 先用 `dry-run` 驗證分流是否正確
 5. 到 `lobster/runs/` 查看 `summary.md`、`packet.md`
+6. 若要讓 `knowledge` 線真正寫入，使用 `safe-run` 並設 `LOBSTER_ALLOW_LOCAL_EXECUTION=1`
 
 ## 預設工作線
 
@@ -41,6 +42,23 @@ scripts/
 2. `knowledge`：產出知識整理包
 3. `publish`：產出發布準備包
 4. `ops`：產出運維巡檢包
+
+## Knowledge 線安全寫入
+
+`knowledge` 線現在可以把整理後筆記安全寫到 [knowledge-vault/README.md](/Users/aios/Projects/00.AI-Notes_Local/github-lobster/knowledge-vault/README.md) 所描述的區域。
+
+建議在 `details` 裡補這些欄位：
+
+```md
+### 目標資料夾
+Inbox
+
+### 預期輸出
+輸出整理後大綱
+
+### 風險邊界
+不要覆寫原始內容
+```
 
 ## 安全原則
 

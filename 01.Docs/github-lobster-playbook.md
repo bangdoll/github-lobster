@@ -23,15 +23,15 @@ GitHub 負責：
 1. 用 Issue 或 Actions 建立任務
 2. `scripts/lobster_router.py` 解析任務
 3. 依 `lane` 分流到對應工作線
-4. 產出 `summary.json` 與 `summary.md`
+4. 產出 `summary.json`、`summary.md`、`packet.json`、`packet.md`
 5. 上傳成 GitHub Artifact 或回寫到 Issue
 
 ## 先從哪些任務開始
 
-1. 研究摘要
-2. 知識整理
-3. 發布前檢查
-4. 日常巡檢
+1. 研究摘要：整理來源、假設、風險、下一步
+2. 知識整理：整理命名、歸檔、標籤、合併策略
+3. 發布前檢查：整理標題、CTA、素材、連結驗證
+4. 日常巡檢：整理健康狀態、風險與交班摘要
 
 ## 不建議一開始就做的事
 
@@ -41,7 +41,7 @@ GitHub 負責：
 
 ## 下一步
 
-等這個 starter 穩定後，再逐步接：
+目前這個 starter 已可直接產出各工作線任務包。下一階段再逐步接：
 
 1. 真正的內容生產腳本
 2. Obsidian 同步

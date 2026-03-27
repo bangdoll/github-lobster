@@ -4,19 +4,27 @@
   "lanes": {
     "research": {
       "label": "研究線",
-      "description": "蒐集資料、整理趨勢、輸出摘要。"
+      "description": "蒐集資料、整理趨勢、輸出摘要。",
+      "handler": "build_research_packet",
+      "deliverable_type": "研究任務包"
     },
     "knowledge": {
       "label": "知識線",
-      "description": "整理筆記、同步知識庫、歸檔內容。"
+      "description": "整理筆記、同步知識庫、歸檔內容。",
+      "handler": "build_knowledge_packet",
+      "deliverable_type": "知識整理包"
     },
     "publish": {
       "label": "發布線",
-      "description": "發布前檢查、輸出整理、發布佇列。"
+      "description": "發布前檢查、輸出整理、發布佇列。",
+      "handler": "build_publish_packet",
+      "deliverable_type": "發布準備包"
     },
     "ops": {
       "label": "運維線",
-      "description": "日常巡檢、例行報表、健康檢查。"
+      "description": "日常巡檢、例行報表、健康檢查。",
+      "handler": "build_ops_packet",
+      "deliverable_type": "運維巡檢包"
     }
   }
 }

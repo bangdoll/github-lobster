@@ -6,7 +6,7 @@
 
 1. 用 GitHub 收件
 2. 用白名單做任務分流
-3. 用執行摘要保留每次任務痕跡
+3. 用執行摘要與任務包保留每次任務痕跡
 
 ## 專案結構
 
@@ -33,13 +33,14 @@ scripts/
 2. 填入任務名稱 `mission`
 3. 選擇工作線 `lane`
 4. 先用 `dry-run` 驗證分流是否正確
+5. 到 `lobster/runs/` 查看 `summary.md`、`packet.md`
 
 ## 預設工作線
 
-1. `research`
-2. `knowledge`
-3. `publish`
-4. `ops`
+1. `research`：產出研究任務包
+2. `knowledge`：產出知識整理包
+3. `publish`：產出發布準備包
+4. `ops`：產出運維巡檢包
 
 ## 安全原則
 

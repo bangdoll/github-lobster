@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict
 
+from lobster_lanes import build_packet
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 REGISTRY_PATH = PROJECT_ROOT / "lobster" / "registry.json"
@@ -56,23 +57,32 @@ def build_run_id() -> str:
     return now.strftime("%Y%m%dT%H%M%S%fZ")
 
 
-def write_outputs(run_dir: Path, summary: Dict[str, Any]) -> None:
+def write_outputs(run_dir: Path, summary: Dict[str, Any], packet: Dict[str, Any]) -> None:
     summary_json = run_dir / "summary.json"
     summary_md = run_dir / "summary.md"
+    packet_json = run_dir / "packet.json"
+    packet_md = run_dir / "packet.md"
 
     summary_json.write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    packet_json.write_text(
+        json.dumps({k: v for k, v in packet.items() if k != "markdown"}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    packet_md.write_text(packet["markdown"], encoding="utf-8")
 
     lines = [
         f"# 龍蝦任務摘要 {summary['run_id']}",
         "",
         f"- 任務：{summary['mission']}",
         f"- 工作線：{summary['lane']}",
+        f"- 工作線標籤：{summary['lane_label']}",
         f"- 模式：{summary['mode']}",
         f"- 狀態：{summary['status']}",
         f"- 來源：{summary['source']}",
+        f"- 交付類型：{summary['deliverable_type']}",
         "",
         "## 任務說明",
         "",
@@ -90,6 +100,11 @@ def write_outputs(run_dir: Path, summary: Dict[str, Any]) -> None:
             "## 執行結果",
             "",
             f"```text\n{summary['execution']}\n```",
+            "",
+            "## 交付檔案",
+            "",
+            f"- packet.json: {packet_json.name}",
+            f"- packet.md: {packet_md.name}",
         ]
     )
 
@@ -123,6 +138,7 @@ def main() -> int:
     mission = normalize_text(args.mission)
     details = args.details.strip()
     lane = infer_lane(mission, details, args.lane, registry)
+    lane_info = registry["lanes"][lane]
     run_id = build_run_id()
     run_dir = RUNS_DIR / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -130,6 +146,7 @@ def main() -> int:
     verification_log = [
         "[VERIFIED_SRC] 已載入 lobster/registry.json",
         f"[VERIFIED_SRC] 已完成工作線判斷：{lane}",
+        f"[VERIFIED_SRC] 已載入工作線處理器：{lane_info['handler']}",
     ]
 
     execution = "dry-run 模式，未執行任何外部腳本。"
@@ -141,19 +158,29 @@ def main() -> int:
         else:
             execution = "safe-run 已要求執行，但環境未開啟 LOBSTER_ALLOW_LOCAL_EXECUTION=1。"
 
+    packet = build_packet(
+        lane_info["handler"],
+        lane_info["label"],
+        mission,
+        details,
+        run_id,
+    )
+
     summary: Dict[str, Any] = {
         "run_id": run_id,
         "mission": mission,
         "details": details,
         "lane": lane,
+        "lane_label": lane_info["label"],
         "mode": args.mode,
         "source": args.source,
         "status": status,
+        "deliverable_type": lane_info["deliverable_type"],
         "verification_log": verification_log,
         "execution": execution,
     }
 
-    write_outputs(run_dir, summary)
+    write_outputs(run_dir, summary, packet)
     export_github_output(run_dir, lane, status)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0

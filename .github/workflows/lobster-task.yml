@@ -1,0 +1,114 @@
+name: Lobster Task Router
+
+on:
+  workflow_dispatch:
+    inputs:
+      mission:
+        description: "龍蝦任務名稱"
+        required: true
+        type: string
+      details:
+        description: "任務補充說明"
+        required: false
+        type: string
+      lane:
+        description: "工作線"
+        required: true
+        type: choice
+        options:
+          - auto
+          - research
+          - knowledge
+          - publish
+          - ops
+        default: auto
+      mode:
+        description: "執行模式"
+        required: true
+        type: choice
+        options:
+          - dry-run
+          - safe-run
+        default: dry-run
+  issues:
+    types:
+      - opened
+      - edited
+
+jobs:
+  route-task:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'lobster')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: 下載程式碼
+        uses: actions/checkout@v4
+
+      - name: 設定 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 準備任務內容
+        id: prep
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_MISSION: ${{ inputs.mission }}
+          INPUT_DETAILS: ${{ inputs.details }}
+          INPUT_LANE: ${{ inputs.lane }}
+          INPUT_MODE: ${{ inputs.mode }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "mission=$INPUT_MISSION" >> "$GITHUB_OUTPUT"
+            echo "details<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$INPUT_DETAILS" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+            echo "lane=$INPUT_LANE" >> "$GITHUB_OUTPUT"
+            echo "mode=$INPUT_MODE" >> "$GITHUB_OUTPUT"
+            echo "source=workflow_dispatch" >> "$GITHUB_OUTPUT"
+          else
+            echo "mission=$ISSUE_TITLE" >> "$GITHUB_OUTPUT"
+            echo "details<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$ISSUE_BODY" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+            echo "lane=auto" >> "$GITHUB_OUTPUT"
+            echo "mode=dry-run" >> "$GITHUB_OUTPUT"
+            echo "source=issue_lobster" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 路由任務
+        id: route
+        run: |
+          python scripts/lobster_router.py \
+            --mission "${{ steps.prep.outputs.mission }}" \
+            --details "${{ steps.prep.outputs.details }}" \
+            --lane "${{ steps.prep.outputs.lane }}" \
+            --mode "${{ steps.prep.outputs.mode }}" \
+            --source "${{ steps.prep.outputs.source }}"
+
+      - name: 上傳任務摘要
+        uses: actions/upload-artifact@v4
+        with:
+          name: lobster-${{ github.run_id }}
+          path: |
+            ${{ steps.route.outputs.summary_path }}
+            ${{ steps.route.outputs.markdown_path }}
+
+      - name: 回寫 Issue 摘要
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const body = fs.readFileSync("${{ steps.route.outputs.markdown_path }}", "utf8");
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });

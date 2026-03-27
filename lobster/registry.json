@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "default_mode": "dry-run",
+  "lanes": {
+    "research": {
+      "label": "研究線",
+      "description": "蒐集資料、整理趨勢、輸出摘要。"
+    },
+    "knowledge": {
+      "label": "知識線",
+      "description": "整理筆記、同步知識庫、歸檔內容。"
+    },
+    "publish": {
+      "label": "發布線",
+      "description": "發布前檢查、輸出整理、發布佇列。"
+    },
+    "ops": {
+      "label": "運維線",
+      "description": "日常巡檢、例行報表、健康檢查。"
+    }
+  }
+}

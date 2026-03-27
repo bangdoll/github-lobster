@@ -1,0 +1,42 @@
+name: 龍蝦任務
+description: 建立一個交給 GitHub 龍蝦處理的任務
+title: "[龍蝦任務] "
+labels:
+  - lobster
+body:
+  - type: textarea
+    id: mission
+    attributes:
+      label: 任務目標
+      description: 用一句話說清楚這隻龍蝦要幫你完成什麼
+      placeholder: 幫我整理今天 AI 新聞，輸出成 5 點摘要
+    validations:
+      required: true
+  - type: dropdown
+    id: lane
+    attributes:
+      label: 工作線
+      options:
+        - auto
+        - research
+        - knowledge
+        - publish
+        - ops
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: 預期輸出
+      description: 說明希望拿到什麼格式、完成條件是什麼
+      placeholder: 請輸出 markdown 摘要，並附上來源連結
+    validations:
+      required: true
+  - type: textarea
+    id: guardrail
+    attributes:
+      label: 風險邊界
+      description: 哪些事情這次不能做
+      placeholder: 不要直接發布，不要刪除任何檔案
+    validations:
+      required: false

@@ -17,6 +17,7 @@
 
 01.Docs/
   github-lobster-playbook.md
+  GitHub_Lobster_快速上手教學.md
 
 lobster/
   inbox/
@@ -35,6 +36,8 @@ scripts/
 4. 先用 `dry-run` 驗證分流是否正確
 5. 到 `lobster/runs/` 查看 `summary.md`、`packet.md`
 6. 若要讓 `knowledge` 線真正寫入，使用 `safe-run` 並設 `LOBSTER_ALLOW_LOCAL_EXECUTION=1`
+
+教學入口在 [GitHub_Lobster_快速上手教學.md](/Users/aios/Projects/00.AI-Notes_Local/github-lobster/01.Docs/GitHub_Lobster_快速上手教學.md)。
 
 ## 預設工作線
 

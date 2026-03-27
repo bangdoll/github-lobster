@@ -39,6 +39,15 @@ scripts/
 
 教學入口在 [GitHub_Lobster_快速上手教學.md](/Users/aios/Projects/00.AI-Notes_Local/github-lobster/01.Docs/GitHub_Lobster_快速上手教學.md)。
 
+## 自動排程
+
+目前已設定自動排程：
+
+1. 每天 `00:00 UTC`
+2. 對應台灣時間是每天 `08:00`（UTC+8）
+3. 預設任務是 `research + dry-run`
+4. 任務名稱是 `每日 AI 趨勢晨報`
+
 ## 預設工作線
 
 1. `research`：產出研究任務包

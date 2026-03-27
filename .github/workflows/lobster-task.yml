@@ -1,6 +1,8 @@
 name: Lobster Task Router
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       mission:
@@ -37,7 +39,7 @@ on:
 
 jobs:
   route-task:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'lobster')
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || contains(github.event.issue.labels.*.name, 'lobster')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -71,6 +73,14 @@ jobs:
             echo "lane=$INPUT_LANE" >> "$GITHUB_OUTPUT"
             echo "mode=$INPUT_MODE" >> "$GITHUB_OUTPUT"
             echo "source=workflow_dispatch" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = "schedule" ]; then
+            echo "mission=每日 AI 趨勢晨報" >> "$GITHUB_OUTPUT"
+            echo "details<<EOF" >> "$GITHUB_OUTPUT"
+            echo "請整理今日值得追蹤的 AI 趨勢，輸出五點摘要與三條後續建議。" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+            echo "lane=research" >> "$GITHUB_OUTPUT"
+            echo "mode=dry-run" >> "$GITHUB_OUTPUT"
+            echo "source=scheduled_daily_0800_taipei" >> "$GITHUB_OUTPUT"
           else
             echo "mission=$ISSUE_TITLE" >> "$GITHUB_OUTPUT"
             echo "details<<EOF" >> "$GITHUB_OUTPUT"
